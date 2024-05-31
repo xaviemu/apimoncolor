@@ -1,7 +1,6 @@
 const express = require('express');
 const csv = require('csv-parser');
 const axios = require('axios');
-const { PassThrough } = require('stream');
 const dotenv = require('dotenv');
 
 // Cargar variables de entorno desde el archivo .env
@@ -11,6 +10,14 @@ const app = express();
 
 // Asigna el puerto basado en el entorno
 const PORT = process.env.PORT || 3005;
+
+// Middleware para configurar CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 app.get('/api/ventas', async (req, res) => {
     const url = process.env.URLDATA; // Utilizar la URL desde las variables de entorno
@@ -43,6 +50,10 @@ app.get('/api/ventas', async (req, res) => {
                     totalPages: Math.ceil(results.length / limit),
                     data: paginatedResults
                 });
+            })
+            .on('error', (err) => {
+                // Manejo de errores durante el procesamiento del CSV
+                res.status(500).send(`Error al procesar el archivo CSV: ${err.message}`);
             });
     } catch (err) {
         // Manejo de errores para enviar el mensaje de error específico
