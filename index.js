@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3005;
 
 app.get('/api/ventas', async (req, res) => {
-    const url = 'http://tiendasmoncolor.es/data/ventas_limpias.csv'; // Asegúrate de que la URL sea correcta
+    const url = URL_DATA; // Asegúrate de que la URL sea correcta
 
     try {
         const response = await axios({
