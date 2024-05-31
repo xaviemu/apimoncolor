@@ -15,6 +15,10 @@ const PORT = process.env.PORT || 3005;
 app.get('/api/ventas', async (req, res) => {
     const url = process.env.URLDATA; // Utilizar la URL desde las variables de entorno
 
+    // Obtener los parámetros de consulta para paginación
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
     try {
         const response = await axios({
             method: 'get',
@@ -27,7 +31,18 @@ app.get('/api/ventas', async (req, res) => {
             .pipe(csv())
             .on('data', (data) => results.push(data))
             .on('end', () => {
-                res.json(results);
+                // Implementación de paginación
+                const startIndex = (page - 1) * limit;
+                const endIndex = startIndex + limit;
+                const paginatedResults = results.slice(startIndex, endIndex);
+
+                res.json({
+                    page: page,
+                    limit: limit,
+                    totalResults: results.length,
+                    totalPages: Math.ceil(results.length / limit),
+                    data: paginatedResults
+                });
             });
     } catch (err) {
         // Manejo de errores para enviar el mensaje de error específico
