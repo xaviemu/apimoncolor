@@ -2,13 +2,18 @@ const express = require('express');
 const csv = require('csv-parser');
 const axios = require('axios');
 const { PassThrough } = require('stream');
+const dotenv = require('dotenv');
+
+// Cargar variables de entorno desde el archivo .env
+dotenv.config();
+
 const app = express();
 
 // Asigna el puerto basado en el entorno
 const PORT = process.env.PORT || 3005;
 
 app.get('/api/ventas', async (req, res) => {
-    const url = URL_DATA; // Asegúrate de que la URL sea correcta
+    const url = process.env.URLDATA; // Utilizar la URL desde las variables de entorno
 
     try {
         const response = await axios({
